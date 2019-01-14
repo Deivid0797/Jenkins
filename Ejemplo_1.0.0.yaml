@@ -1,0 +1,103 @@
+---
+swagger: "2.0"
+info:
+  x-ibm-name: "Ejemplo"
+  version: "1.0.0"
+  title: "Ejemplo"
+schemes:
+- "https"
+host: "$(catalog.host)"
+basePath: "/pruebayaml"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+securityDefinitions: {}
+security: []
+x-ibm-configuration:
+  gateway: "datapower-gateway"
+  catalogs:
+    apic-dev:
+      properties:
+        runtime-url: "$(TARGET_URL)"
+    sb:
+      properties:
+        runtime-url: "http://localhost:3001"
+  assembly:
+    execute:
+    - switch:
+        title: "switch"
+        case:
+        - condition: "request.verb == ('GET')"
+          execute:
+          - set-variable:
+              title: "set-variable"
+              actions:
+              - set: "message.headers.Content-Type"
+                value: "aplication/json"
+              version: "1.0.0"
+          - invoke:
+              target-url: "http://172.16.1.195:8080/students/{id}"
+              verb: "GET"
+              cache-response: "time-to-live"
+              secure-gateway: false
+        - condition: "request.verb == ('POST')"
+          execute:
+          - invoke:
+              title: "invoke"
+              timeout: 60
+              verb: "POST"
+              cache-response: "protocol"
+              cache-ttl: 900
+              version: "1.0.0"
+              target-url: "http://172.16.1.195:8080/students"
+        - condition: "request.verb == ('DELETE')"
+          execute:
+          - invoke:
+              title: "invoke"
+              timeout: 60
+              verb: "DELETE"
+              cache-response: "protocol"
+              cache-ttl: 900
+              stop-on-error:
+              - null
+              version: "1.0.0"
+              target-url: "http://172.16.1.195:8080/students/{id}"
+        - condition: "request.verb == ('PUT')"
+          execute:
+          - invoke:
+              title: "invoke"
+              timeout: 60
+              verb: "PUT"
+              cache-response: "protocol"
+              cache-ttl: 900
+              stop-on-error:
+              - null
+              version: "1.0.0"
+              target-url: "http://172.16.1.195:8080/students/{id}"
+        version: "1.0.0"
+  enforced: true
+  testable: true
+  phase: "realized"
+  cors:
+    enabled: true
+paths:
+  /prueba:
+    get:
+      responses:
+        200:
+          description: "200 OK"
+    post:
+      responses:
+        200:
+          description: "200 OK"
+      deprecated: false
+    put:
+      responses:
+        200:
+          description: "200 OK"
+    delete:
+      responses:
+        200:
+          description: "200 OK"
+definitions: {}
